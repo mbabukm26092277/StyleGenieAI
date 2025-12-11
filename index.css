@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* src/index.css */
 :root {
   --bg: #fff;
@@ -11,3 +12,24 @@ html, body, #root {
   color: var(--text);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
+=======
+/* index.css - required so Vercel build does not fail */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background-color: #0b0f12;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+>>>>>>> 434f88a (updated)

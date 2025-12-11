@@ -1,9 +1,20 @@
+<<<<<<< HEAD
 import React, { useState, useEffect, useRef } from 'react';
 import { Camera, Upload, Scissors, Shirt, MapPin, RefreshCcw, Sparkles, ExternalLink, ChevronRight, AlertCircle, X, ShoppingBag, Search, Link as LinkIcon, Share2, Download } from 'lucide-react';
+=======
+import React, { useState, useEffect } from 'react';
+import { Upload, Scissors, Shirt, MapPin, RefreshCcw, Sparkles, ExternalLink, ChevronRight, AlertCircle, X, ShoppingBag, Search, Link as LinkIcon, Share2, Download } from 'lucide-react';
+>>>>>>> 434f88a (updated)
 import { analyzeImageAndSuggestStyles, visualizeStyle, findNearbySalons, findShoppingLinks, getOutfitDescriptionFromUrl } from './services/geminiService';
 import { AnalysisResult, StyleItem, GroundingChunk, Coordinates } from './types';
 import LoadingOverlay from './components/LoadingOverlay';
 import StyleCard from './components/StyleCard';
+<<<<<<< HEAD
+=======
+import './index.css';
+
+
+>>>>>>> 434f88a (updated)
 
 enum AppState {
   UPLOAD,
@@ -493,7 +504,10 @@ const App: React.FC = () => {
       </header>
       
       <div className="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
+<<<<<<< HEAD
         {/* Compare slider could be cool, but simplistic side-by-side or toggle is easier for MVP */}
+=======
+>>>>>>> 434f88a (updated)
         {generatedImage && (
           <img 
             src={generatedImage} 
@@ -560,10 +574,13 @@ const App: React.FC = () => {
             </div>
 
             <div className="space-y-4">
+<<<<<<< HEAD
                 {/* 
                    Maps Grounding sometimes returns unstructured text with integrated links in Markdown, 
                    or chunks. We prioritize chunks for clean UI.
                 */}
+=======
+>>>>>>> 434f88a (updated)
                 {groundingResults.chunks.length > 0 ? (
                     groundingResults.chunks.map((chunk, i) => {
                         const isMap = !!chunk.maps;
@@ -604,7 +621,10 @@ const App: React.FC = () => {
                     </div>
                 )}
                 
+<<<<<<< HEAD
                 {/* Fallback to text if needed, but usually chunks cover it */}
+=======
+>>>>>>> 434f88a (updated)
                  <div className="mt-4 text-xs text-gray-500 border-t border-gray-800 pt-4">
                     AI suggestions based on available data. Always verify hours and availability.
                  </div>
