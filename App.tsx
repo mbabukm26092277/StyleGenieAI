@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-import React, { useState, useEffect, useRef } from 'react';
-import { Camera, Upload, Scissors, Shirt, MapPin, RefreshCcw, Sparkles, ExternalLink, ChevronRight, AlertCircle, X, ShoppingBag, Search, Link as LinkIcon, Share2, Download } from 'lucide-react';
-=======
 import React, { useState, useEffect } from 'react';
 import { Upload, Scissors, Shirt, MapPin, RefreshCcw, Sparkles, ExternalLink, ChevronRight, AlertCircle, X, ShoppingBag, Search, Link as LinkIcon, Share2, Download } from 'lucide-react';
->>>>>>> 434f88a (updated)
 import { analyzeImageAndSuggestStyles, visualizeStyle, findNearbySalons, findShoppingLinks, getOutfitDescriptionFromUrl } from './services/geminiService';
 import { AnalysisResult, StyleItem, GroundingChunk, Coordinates } from './types';
 import LoadingOverlay from './components/LoadingOverlay';
 import StyleCard from './components/StyleCard';
-<<<<<<< HEAD
-=======
 import './index.css';
-
-
->>>>>>> 434f88a (updated)
 
 enum AppState {
   UPLOAD,
@@ -503,58 +493,56 @@ const App: React.FC = () => {
         </button>
       </header>
       
-      <div className="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
-<<<<<<< HEAD
-        {/* Compare slider could be cool, but simplistic side-by-side or toggle is easier for MVP */}
-=======
->>>>>>> 434f88a (updated)
-        {generatedImage && (
-          <img 
-            src={generatedImage} 
-            alt="Generated Style" 
-            className="max-w-full max-h-screen object-contain"
-          />
-        )}
+<div className="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
+  {/* Compare slider could be cool, but simplistic side-by-side or toggle is easier for MVP */}
+  {generatedImage && (
+    <div className="w-full h-full flex flex-col items-center justify-center p-6">
+      <img 
+        src={generatedImage} 
+        alt="Generated Style" 
+        className="max-w-full max-h-screen object-contain mb-6"
+      />
+
+      <div className="flex items-center justify-center mb-4">
+        <div className="w-12 h-1 bg-gray-600 rounded-full"></div>
       </div>
 
-      <div className="bg-surface p-6 rounded-t-3xl shadow-2xl z-10 -mt-6">
-        <div className="flex items-center justify-center mb-4">
-            <div className="w-12 h-1 bg-gray-600 rounded-full"></div>
-        </div>
-        <h2 className="text-2xl font-bold text-white mb-2">{selectedStyle?.name}</h2>
-        <p className="text-gray-400 mb-6">
-           {selectedStyle?.selectedColor ? `${selectedStyle.selectedColor} ` : ''} 
-           {selectedStyle?.description}
-        </p>
-        
-        <div className="flex gap-3">
-            <button 
-            onClick={() => selectedStyle && handleAction(selectedStyle)}
-            className={`flex-1 py-4 rounded-xl font-bold text-white shadow-lg flex items-center justify-center gap-2 ${
-                activeTab === 'hair' ? 'bg-primary hover:bg-primary/90' : 'bg-secondary hover:bg-secondary/90'
-            }`}
-            >
-            {activeTab === 'hair' ? <MapPin /> : <ShoppingBag />}
-            {activeTab === 'hair' ? 'Find Salons' : 'Shop This Look'}
-            </button>
+      <h2 className="text-2xl font-bold text-white mb-2">{selectedStyle?.name}</h2>
+      <p className="text-gray-400 mb-6">
+        {selectedStyle?.selectedColor ? `${selectedStyle.selectedColor} ` : ''} 
+        {selectedStyle?.description}
+      </p>
+      
+      <div className="flex gap-3">
+        <button 
+          onClick={() => selectedStyle && handleAction(selectedStyle)}
+          className={`flex-1 py-4 rounded-xl font-bold text-white shadow-lg flex items-center justify-center gap-2 ${
+            activeTab === 'hair' ? 'bg-primary hover:bg-primary/90' : 'bg-secondary hover:bg-secondary/90'
+          }`}
+        >
+          {activeTab === 'hair' ? <MapPin /> : <ShoppingBag />}
+          {activeTab === 'hair' ? 'Find Salons' : 'Shop This Look'}
+        </button>
 
-            <button
-            onClick={handleShare}
-            className="px-6 py-4 rounded-xl font-bold text-white bg-gray-700 hover:bg-gray-600 shadow-lg flex items-center justify-center gap-2 transition-colors"
-            title="Share"
-            >
-            <Share2 size={24} />
-            </button>
+        <button
+          onClick={handleShare}
+          className="px-6 py-4 rounded-xl font-bold text-white bg-gray-700 hover:bg-gray-600 shadow-lg flex items-center justify-center gap-2 transition-colors"
+          title="Share"
+        >
+          <Share2 size={24} />
+        </button>
 
-            <button
-            onClick={handleDownload}
-            className="px-6 py-4 rounded-xl font-bold text-white bg-gray-700 hover:bg-gray-600 shadow-lg flex items-center justify-center gap-2 transition-colors"
-            title="Download"
-            >
-            <Download size={24} />
-            </button>
-        </div>
+        <button
+          onClick={handleDownload}
+          className="px-6 py-4 rounded-xl font-bold text-white bg-gray-700 hover:bg-gray-600 shadow-lg flex items-center justify-center gap-2 transition-colors"
+          title="Download"
+        >
+          <Download size={24} />
+        </button>
       </div>
+    </div>
+  )}
+</div>
     </div>
   );
 
@@ -573,62 +561,48 @@ const App: React.FC = () => {
                 <button onClick={handleCloseGrounding} className="p-2 hover:bg-white/10 rounded-full"><X size={20} /></button>
             </div>
 
-            <div className="space-y-4">
-<<<<<<< HEAD
-                {/* 
-                   Maps Grounding sometimes returns unstructured text with integrated links in Markdown, 
-                   or chunks. We prioritize chunks for clean UI.
-                */}
-=======
->>>>>>> 434f88a (updated)
-                {groundingResults.chunks.length > 0 ? (
-                    groundingResults.chunks.map((chunk, i) => {
-                        const isMap = !!chunk.maps;
-                        const uri = isMap ? chunk.maps?.uri : chunk.web?.uri;
-                        const title = isMap ? chunk.maps?.title : chunk.web?.title;
-                        const snippet = isMap 
-                            ? chunk.maps?.placeAnswerSources?.[0]?.reviewSnippets?.[0]?.content 
-                            : chunk.web?.snippet;
+<div className="space-y-4">
+    {/* Maps grounding sometimes returns unstructured text with integrated links in Markdown or structured chunks; prefer chunks for UI */}
+    {groundingResults.chunks.length > 0 ? (
+        groundingResults.chunks.map((chunk, i) => {
+            const isMap = !!chunk.maps;
+            const uri = isMap ? chunk.maps?.uri : chunk.web?.uri;
+            const title = isMap ? chunk.maps?.title : chunk.web?.title;
+            const snippet = isMap ? chunk.maps?.snippet : chunk.web?.snippet;
 
-                        if (!uri || !title) return null;
-
-                        return (
-                            <a 
-                                key={i} 
-                                href={uri} 
-                                target="_blank" 
-                                rel="noreferrer"
-                                className="block bg-dark border border-gray-700 hover:border-white/50 p-4 rounded-xl transition-all group"
-                            >
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <h4 className="font-semibold text-white group-hover:text-primary transition-colors">{title}</h4>
-                                        {snippet && <p className="text-sm text-gray-400 mt-1 line-clamp-2">"{snippet}"</p>}
-                                        <span className="text-xs text-blue-400 mt-2 inline-flex items-center gap-1">
-                                            {isMap ? 'View on Google Maps' : 'Visit Store'} <ExternalLink size={10} />
-                                        </span>
-                                    </div>
-                                    <ChevronRight className="text-gray-600 group-hover:text-white" />
-                                </div>
-                            </a>
-                        );
-                    })
-                ) : (
-                    <div className="text-center py-10">
-                        <AlertCircle className="w-10 h-10 text-gray-500 mx-auto mb-3" />
-                        <p className="text-gray-400">No direct links found.</p>
-                        <p className="text-sm text-gray-500 mt-2">{groundingResults.text}</p>
+            return (
+                <a
+                    key={i}
+                    href={uri}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block bg-dark border border-gray-700 hover:border-white/50 p-4 rounded-xl transition-all group"
+                >
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h4 className="font-semibold text-white group-hover:text-primary transition-colors">{title}</h4>
+                            {snippet && <p className="text-sm text-gray-400 mt-1 line-clamp-2">"{snippet}"</p>}
+                            <span className="text-xs text-blue-400 mt-2 inline-flex items-center gap-1">
+                                {isMap ? 'View on Google Maps' : 'Visit Store'} <ExternalLink size={10} />
+                            </span>
+                        </div>
+                        <ChevronRight className="text-gray-600 group-hover:text-white" />
                     </div>
-                )}
-                
-<<<<<<< HEAD
-                {/* Fallback to text if needed, but usually chunks cover it */}
-=======
->>>>>>> 434f88a (updated)
-                 <div className="mt-4 text-xs text-gray-500 border-t border-gray-800 pt-4">
-                    AI suggestions based on available data. Always verify hours and availability.
-                 </div>
-            </div>
+                </a>
+            );
+        })
+    ) : (
+        <div className="text-center py-10">
+            <AlertCircle className="w-10 h-10 text-gray-500 mx-auto mb-3" />
+            <p className="text-gray-400">No direct links found.</p>
+            <p className="text-sm text-gray-500 mt-2">{groundingResults.text}</p>
+        </div>
+    )}
+
+    <div className="mt-4 text-xs text-gray-500 border-t border-gray-800 pt-4">
+        AI suggestions based on available data. Always verify hours and availability.
+    </div>
+</div>
         </div>
       </div>
     );
@@ -639,8 +613,6 @@ const App: React.FC = () => {
       {(appState === AppState.ANALYZING || appState === AppState.GENERATING_IMAGE) && (
         <LoadingOverlay message={loadingMessage} />
       )}
-      
-      {appState === AppState.UPLOAD && renderUpload()}
       {appState === AppState.DASHBOARD && renderDashboard()}
       {appState === AppState.SHOWING_RESULT && renderResult()}
       
