@@ -1,0 +1,10 @@
+@import "tailwindcss";
+/* stylelint-disable at-rule-no-unknown */
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+/* stylelint-enable at-rule-no-unknown */
+
+/* Optional small defaults */
+:root { --bg:#0b0f12; --text:#e6eef8; }
+html,body,#root { height:100%; margin:0; padding:0; background:var(--bg); color:var(--text); font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
