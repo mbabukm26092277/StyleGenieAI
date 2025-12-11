@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, Upload, Scissors, Shirt, MapPin, RefreshCcw, Sparkles, ExternalLink, ChevronRight, AlertCircle, X, ShoppingBag, Search, Link as LinkIcon, Share2 } from 'lucide-react';
+import { Camera, Upload, Scissors, Shirt, MapPin, RefreshCcw, Sparkles, ExternalLink, ChevronRight, AlertCircle, X, ShoppingBag, Search, Link as LinkIcon, Share2, Download } from 'lucide-react';
 import { analyzeImageAndSuggestStyles, visualizeStyle, findNearbySalons, findShoppingLinks, getOutfitDescriptionFromUrl } from './services/geminiService';
 import { AnalysisResult, StyleItem, GroundingChunk, Coordinates } from './types';
 import LoadingOverlay from './components/LoadingOverlay';
@@ -274,25 +274,22 @@ const App: React.FC = () => {
           files: [file],
         });
       } else {
-        // Fallback: Download the image
-        const link = document.createElement('a');
-        link.href = generatedImage;
-        link.download = "style-genie-look.jpg";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        alert("Image downloaded! You can now share it manually.");
+        // Fallback if sharing is not supported
+        alert("Sharing not supported on this device. Try the Download button instead!");
       }
     } catch (error) {
       console.error("Error sharing:", error);
-      // Fallback for any other errors
-      const link = document.createElement('a');
-      link.href = generatedImage;
-      link.download = "style-genie-look.jpg";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     }
+  };
+
+  const handleDownload = () => {
+    if (!generatedImage) return;
+    const link = document.createElement('a');
+    link.href = generatedImage;
+    link.download = `style-genie-${activeTab}-${Date.now()}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleCloseGrounding = () => {
@@ -534,6 +531,14 @@ const App: React.FC = () => {
             >
             <Share2 size={24} />
             </button>
+
+            <button
+            onClick={handleDownload}
+            className="px-6 py-4 rounded-xl font-bold text-white bg-gray-700 hover:bg-gray-600 shadow-lg flex items-center justify-center gap-2 transition-colors"
+            title="Download"
+            >
+            <Download size={24} />
+            </button>
         </div>
       </div>
     </div>
@@ -564,7 +569,9 @@ const App: React.FC = () => {
                         const isMap = !!chunk.maps;
                         const uri = isMap ? chunk.maps?.uri : chunk.web?.uri;
                         const title = isMap ? chunk.maps?.title : chunk.web?.title;
-                        const snippet = isMap ? chunk.maps?.placeAnswerSources?.[0]?.reviewSnippets?.[0]?.content : null;
+                        const snippet = isMap 
+                            ? chunk.maps?.placeAnswerSources?.[0]?.reviewSnippets?.[0]?.content 
+                            : chunk.web?.snippet;
 
                         if (!uri || !title) return null;
 

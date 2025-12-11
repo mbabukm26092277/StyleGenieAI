@@ -16,6 +16,7 @@ export interface GroundingChunk {
   web?: {
     uri: string;
     title: string;
+    snippet?: string;
   };
   maps?: {
     uri: string;
