@@ -18,6 +18,7 @@ export interface GroundingChunk {
     title: string;
     snippet?: string;
   };
+  // Keeping maps definition for potential future use or type compatibility
   maps?: {
     uri: string;
     title: string;
