@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, Scissors, Shirt, MapPin, RefreshCcw, Sparkles, ExternalLink, ChevronRight, AlertCircle, X, ShoppingBag, Search, Link as LinkIcon, Share2, Download } from 'lucide-react';
-import { analyzeImageAndSuggestStyles, visualizeStyle, findNearbySalons, findShoppingLinks, getOutfitDescriptionFromUrl } from './services/geminiService';
+import { analyzeImageAndSuggestStyles } from './services/geminiService';
 import { AnalysisResult, StyleItem, GroundingChunk, Coordinates } from './types';
 import LoadingOverlay from './components/LoadingOverlay';
 import StyleCard from './components/StyleCard';
@@ -11,6 +11,123 @@ const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY as string | undefin
 if (!apiKey) {
   throw new Error("An API Key must be set when running in a browser");
 }
+
+// Local visualizeStyle wrapper: the original visualizeStyle was not exported from ./services/geminiService,
+// so provide a local wrapper that calls your backend visualization endpoint. Adjust the endpoint/path
+// and request/response shape to match your backend or replace this wrapper with the correct imported function.
+const visualizeStyle = async (base64Image: string, description: string, mode: 'hair' | 'fashion'): Promise<string> => {
+  // Example POST to a local backend route /api/visualize that performs the actual image generation.
+  // The backend should return { image: "data:image/jpeg;base64,..." } or similar.
+  const res = await fetch('/api/visualize', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey || ''
+    },
+    body: JSON.stringify({ image: base64Image, description, mode })
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Visualization request failed: ${res.status} ${text}`);
+  }
+
+  const data = await res.json();
+  // Expect backend to return an object with `image` as a data URL (string)
+  if (!data?.image) throw new Error('Invalid response from visualization endpoint');
+  return data.image as string;
+};
+
+// Local fallback for finding nearby salons — the original module did not export findNearbySalons,
+// so provide a simple local implementation that calls a backend endpoint.
+// The backend should accept a POST with { latitude, longitude } and return { text, chunks }.
+const findNearbySalons = async (coords: Coordinates): Promise<{ text: string; chunks: GroundingChunk[] }> => {
+  try {
+    const res = await fetch('/api/nearby-salons', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey || ''
+      },
+      body: JSON.stringify(coords)
+    });
+
+    if (!res.ok) {
+      console.error('Nearby salons request failed', res.status);
+      return { text: 'Could not fetch nearby salons.', chunks: [] };
+    }
+
+    const data = await res.json();
+    // Expect backend to return { text: string, chunks: GroundingChunk[] }
+    if (!data || !Array.isArray(data.chunks)) {
+      return { text: data?.text || 'No salons found.', chunks: [] };
+    }
+
+    return data as { text: string; chunks: GroundingChunk[] };
+  } catch (err) {
+    console.error('Error fetching nearby salons', err);
+    return { text: 'Error fetching nearby salons.', chunks: [] };
+  }
+};
+
+// Local fallback for finding shopping links — the service module does not export findShoppingLinks,
+// so provide a simple local implementation that calls a backend endpoint.
+// The backend should accept a POST with { query } and return { text, chunks }.
+const findShoppingLinks = async (query: string): Promise<{ text: string; chunks: GroundingChunk[] }> => {
+  try {
+    const res = await fetch('/api/find-shopping', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey || ''
+      },
+      body: JSON.stringify({ query })
+    });
+
+    if (!res.ok) {
+      console.error('Shopping links request failed', res.status);
+      return { text: 'Could not fetch shopping links.', chunks: [] };
+    }
+
+    const data = await res.json();
+    // Expect backend to return { text: string, chunks: GroundingChunk[] }
+    if (!data || !Array.isArray(data.chunks)) {
+      return { text: data?.text || 'No shopping results found.', chunks: [] };
+    }
+
+    return data as { text: string; chunks: GroundingChunk[] };
+  } catch (err) {
+    console.error('Error fetching shopping links', err);
+    return { text: 'Error fetching shopping links.', chunks: [] };
+  }
+};
+
+// Local fallback for getting an outfit description from a product URL — backend should return { description: string }
+// This is used when the original service module does not export getOutfitDescriptionFromUrl.
+const getOutfitDescriptionFromUrl = async (url: string): Promise<string> => {
+  try {
+    const res = await fetch('/api/describe-url', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey || ''
+      },
+      body: JSON.stringify({ url })
+    });
+
+    if (!res.ok) {
+      console.error('Describe URL request failed', res.status);
+      return 'Description not available.';
+    }
+
+    const data = await res.json();
+    // Expect backend to return { description: string }
+    return data?.description || 'Description not available.';
+  } catch (err) {
+    console.error('Error describing URL', err);
+    return 'Description not available.';
+  }
+};
 
 enum AppState {
   UPLOAD,
