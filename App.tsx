@@ -4,6 +4,13 @@ import { analyzeImageAndSuggestStyles, visualizeStyle, findNearbySalons, findSho
 import { AnalysisResult, StyleItem, GroundingChunk, Coordinates } from './types';
 import LoadingOverlay from './components/LoadingOverlay';
 import StyleCard from './components/StyleCard';
+// Type-safe access to Vite's import.meta.env — cast to any if TypeScript types for ImportMeta.env are not available.
+// This avoids "Property 'env' does not exist on type 'ImportMeta'." when the project lacks Vite typings.
+const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY as string | undefined;
+
+if (!apiKey) {
+  throw new Error("An API Key must be set when running in a browser");
+}
 
 enum AppState {
   UPLOAD,
