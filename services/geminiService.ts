@@ -2,26 +2,26 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { AnalysisResult, Coordinates, GroundingChunk } from "../types";
 
 // Initialize Gemini Client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
 
 // Models
 const TEXT_MODEL = "gemini-2.5-flash";
 const IMAGE_MODEL = "gemini-2.5-flash-image";
 
 // Custom Search Configuration
-const CSE_ID = process.env.SEARCH_ENGINE_ID;
-const API_KEY = process.env.API_KEY;
+const CSE_ID = import.meta.env.VITE_SEARCH_ENGINE_ID;
+const API_KEY = import.meta.env.VITE_API_KEY;
 
 /**
  * Analyzes the user's photo to suggest hair and clothing styles.
  */
 export const analyzeImageAndSuggestStyles = async (
-  base64Image: string, 
+  base64Image: string,
   requestType: 'initial' | 'more_hair' | 'more_fashion' | 'custom' = 'initial',
   customQuery?: string
 ): Promise<AnalysisResult> => {
   let styleRequest = "";
-  
+
   if (requestType === 'custom' && customQuery) {
     styleRequest = `suggest 5 hairstyles and 5 fashion outfit styles that match this specific request: "${customQuery}". If the request is about hair, focus on hair; if fashion, focus on fashion.`;
   } else if (requestType === 'more_hair') {
@@ -129,7 +129,7 @@ export const getOutfitDescriptionFromUrl = async (url: string): Promise<string> 
  * Generates a visualization of a specific style on the user.
  */
 export const visualizeStyle = async (base64Image: string, styleDescription: string, type: 'hair' | 'fashion'): Promise<string> => {
-  const prompt = type === 'hair' 
+  const prompt = type === 'hair'
     ? `Change the person's hairstyle to ${styleDescription}. Keep their face and expression exactly the same. Only change the hair. Ensure the image is photorealistic, professional, and safe for all audiences.`
     : `Change the person's clothing to ${styleDescription}. Keep their face, head, and background exactly the same. High fashion photography style. SAFETY WARNING: The output MUST BE FULLY CLOTHED and MODEST. NO NUDITY, NO LINGERIE, NO REVEALING CLOTHING.`;
 
@@ -150,11 +150,11 @@ export const visualizeStyle = async (base64Image: string, styleDescription: stri
 
   // Extract image from response parts
   const imagePart = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
-  
+
   if (imagePart && imagePart.inlineData && imagePart.inlineData.data) {
     return `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
   }
-  
+
   throw new Error("Failed to generate image visualization");
 };
 
@@ -171,7 +171,7 @@ const performCustomSearch = async (query: string): Promise<GroundingChunk[]> => 
     const url = `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CSE_ID}&q=${encodeURIComponent(query)}`;
     const res = await fetch(url);
     const data = await res.json();
-    
+
     if (data.items && Array.isArray(data.items)) {
       return data.items.map((item: any) => ({
         web: {
@@ -195,7 +195,7 @@ export const findNearbySalons = async (location: Coordinates): Promise<{ text: s
   // Construct a query that works well with standard Google Search logic
   const query = `best hair salons near ${location.latitude}, ${location.longitude}`;
   const chunks = await performCustomSearch(query);
-  
+
   return {
     text: chunks.length > 0 ? "Here are some top-rated salons found near your location:" : "No salons found or search is unconfigured.",
     chunks: chunks
@@ -208,7 +208,7 @@ export const findNearbySalons = async (location: Coordinates): Promise<{ text: s
 export const findShoppingLinks = async (query: string): Promise<{ text: string, chunks: GroundingChunk[] }> => {
   const searchTerms = `buy online ${query}`;
   const chunks = await performCustomSearch(searchTerms);
-  
+
   return {
     text: chunks.length > 0 ? "Here are some shopping options found on the web:" : "No products found or search is unconfigured.",
     chunks: chunks

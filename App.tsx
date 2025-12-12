@@ -613,6 +613,7 @@ const App: React.FC = () => {
       {(appState === AppState.ANALYZING || appState === AppState.GENERATING_IMAGE) && (
         <LoadingOverlay message={loadingMessage} />
       )}
+      {appState === AppState.UPLOAD && renderUpload()}
       {appState === AppState.DASHBOARD && renderDashboard()}
       {appState === AppState.SHOWING_RESULT && renderResult()}
       
