@@ -1,0 +1,8 @@
+{
+  "name": "StyleGenie AI",
+  "description": "Your personal AI stylist. Upload a photo to discover 10 custom hairstyles, find top-rated salons nearby, and try on the latest fashion trends with shopping links.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
